@@ -93,8 +93,7 @@ fieldset {
   border: 0;
 }
 
-input[type="text"],
-textarea {
+input[type="text"] {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -104,12 +103,7 @@ textarea {
   background: #fff;
 }
 
-textarea {
-  resize: vertical;
-}
-
 input[type="text"]:focus,
-textarea:focus,
 .course-option:has(input:focus-visible) {
   outline: 3px solid rgba(245, 182, 66, 0.45);
   border-color: var(--focus);

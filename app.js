@@ -83,7 +83,6 @@ form.addEventListener("submit", async (event) => {
   const payload = {
     name: formData.get("name"),
     courseIds: formData.getAll("courseIds"),
-    memo: formData.get("memo"),
   };
 
   try {

@@ -211,19 +211,15 @@ function readBody(req) {
   });
 }
 
-function buildNote({ courses, memo }) {
-  const lines = [
-    `선택 과정 수: ${courses.length}`,
-    "선택 과정:",
-    ...courses.map(
-      (course, index) =>
-        `${index + 1}. [${course.id}] ${course.title} / ${course.category} / ${course.hours}H / ${course.days}일`,
-    ),
-  ];
+function formatCourse(course) {
+  return `[${course.id}] ${course.title}`;
+}
 
-  if (memo) lines.push(`비고: ${memo}`);
-  lines.push(`제출일시: ${new Date().toISOString()}`);
-  return lines.join("\n");
+function buildCourseFields(courses) {
+  return courses.slice(0, 5).reduce((fields, course, index) => {
+    fields[`희망과정_${index + 1}`] = formatCourse(course);
+    return fields;
+  }, {});
 }
 
 async function handleSubmit(req, res) {
@@ -234,7 +230,6 @@ async function handleSubmit(req, res) {
     const courseIds = Array.isArray(data.courseIds)
       ? data.courseIds.map((id) => String(id).trim()).filter(Boolean)
       : [String(data.courseId || "").trim()].filter(Boolean);
-    const memo = String(data.memo || "").trim();
     const courses = courseIds
       .map((courseId) => COURSES.find((item) => item.id === courseId))
       .filter(Boolean);
@@ -249,8 +244,7 @@ async function handleSubmit(req, res) {
 
     const result = await mcp.createSurveyRow({
       이름: name,
-      노트: buildNote({ courses, memo }),
-      활성: true,
+      ...buildCourseFields(courses.slice(0, 5)),
     });
 
     sendJson(res, 200, { ok: true, result });
