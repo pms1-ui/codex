@@ -62,11 +62,25 @@ function renderCourses(courses) {
     .join("");
 }
 
+async function readJsonResponse(response) {
+  const text = await response.text();
+
+  if (!text) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("서버 응답을 읽지 못했습니다. Node 서버 주소에서 다시 제출해주세요.");
+  }
+}
+
 async function loadCourses() {
   try {
     const response = await fetch("/api/courses");
     if (!response.ok) throw new Error("API unavailable");
-    const data = await response.json();
+    const data = await readJsonResponse(response);
     renderCourses(data.courses);
   } catch {
     renderCourses(DEFAULT_COURSES);
@@ -95,7 +109,7 @@ form.addEventListener("submit", async (event) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    const data = await response.json();
+    const data = await readJsonResponse(response);
 
     if (!response.ok || !data.ok) {
       throw new Error(data.message || "제출에 실패했습니다.");
