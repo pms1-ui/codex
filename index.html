@@ -1,12 +1,45 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>철산 매수 실행 브리프</title>
-  <meta http-equiv="refresh" content="0; url=./cheolsan-dark-presentation.html" />
-</head>
-<body>
-  <p><a href="./cheolsan-dark-presentation.html">철산 매수 실행 브리프 열기</a></p>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>내부 교육 희망자 조사</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="survey-shell">
+      <section class="survey-panel" aria-labelledby="survey-title">
+        <header class="survey-header">
+          <p class="eyebrow">내부 교육 희망자 조사</p>
+          <h1 id="survey-title">생성형 AI 활용 자동화 교육</h1>
+          <p class="summary">
+            수강 희망 과정을 선택하면 Baserow 교육 희망자 테이블로 접수됩니다.
+          </p>
+        </header>
+
+        <form id="survey-form" class="survey-form">
+          <label class="field">
+            <span>이름</span>
+            <input id="name" name="name" type="text" autocomplete="name" required placeholder="예: 홍길동" />
+          </label>
+
+          <fieldset class="course-field">
+            <legend>수강 희망 과정</legend>
+            <div id="course-list" class="course-list" aria-live="polite"></div>
+          </fieldset>
+
+          <label class="field">
+            <span>비고</span>
+            <textarea id="memo" name="memo" rows="3" placeholder="전달할 내용이 있으면 입력해주세요."></textarea>
+          </label>
+
+          <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
+
+          <button id="submit-button" class="submit-button" type="submit">제출하기</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
 </html>
