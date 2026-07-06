@@ -53,7 +53,12 @@ const MIME_TYPES = {
   ".json": "application/json; charset=utf-8",
 };
 
-const STATIC_FILES = new Set(["/index.html", "/app.js", "/styles.css"]);
+const STATIC_FILES = new Set([
+  "/index.html",
+  "/260706/index.html",
+  "/260706/app.js",
+  "/260706/styles.css",
+]);
 
 class McpClient {
   constructor(url) {
@@ -258,7 +263,17 @@ async function handleSubmit(req, res) {
 
 function serveStatic(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const requestedPath = url.pathname === "/" ? "/index.html" : url.pathname;
+  let requestedPath = url.pathname === "/" ? "/index.html" : url.pathname;
+
+  if (requestedPath === "/260706") {
+    res.writeHead(302, { Location: "/260706/" });
+    res.end();
+    return;
+  }
+
+  if (requestedPath === "/260706/") {
+    requestedPath = "/260706/index.html";
+  }
 
   if (!STATIC_FILES.has(requestedPath)) {
     res.writeHead(404);
