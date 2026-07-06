@@ -211,13 +211,14 @@ function readBody(req) {
   });
 }
 
-function buildNote({ course, memo }) {
+function buildNote({ courses, memo }) {
   const lines = [
-    `선택 과정번호: ${course.id}`,
-    `선택 과정명: ${course.title}`,
-    `분류: ${course.category}`,
-    `훈련시간: ${course.hours}H`,
-    `훈련기간: ${course.days}일`,
+    `선택 과정 수: ${courses.length}`,
+    "선택 과정:",
+    ...courses.map(
+      (course, index) =>
+        `${index + 1}. [${course.id}] ${course.title} / ${course.category} / ${course.hours}H / ${course.days}일`,
+    ),
   ];
 
   if (memo) lines.push(`비고: ${memo}`);
@@ -230,21 +231,25 @@ async function handleSubmit(req, res) {
     const raw = await readBody(req);
     const data = JSON.parse(raw || "{}");
     const name = String(data.name || "").trim();
-    const courseId = String(data.courseId || "").trim();
+    const courseIds = Array.isArray(data.courseIds)
+      ? data.courseIds.map((id) => String(id).trim()).filter(Boolean)
+      : [String(data.courseId || "").trim()].filter(Boolean);
     const memo = String(data.memo || "").trim();
-    const course = COURSES.find((item) => item.id === courseId);
+    const courses = courseIds
+      .map((courseId) => COURSES.find((item) => item.id === courseId))
+      .filter(Boolean);
 
     if (!name) {
       return sendJson(res, 400, { ok: false, message: "이름을 입력해주세요." });
     }
 
-    if (!course) {
-      return sendJson(res, 400, { ok: false, message: "수강 희망 과정을 선택해주세요." });
+    if (!courses.length) {
+      return sendJson(res, 400, { ok: false, message: "수강 희망 과정을 하나 이상 선택해주세요." });
     }
 
     const result = await mcp.createSurveyRow({
       이름: name,
-      노트: buildNote({ course, memo }),
+      노트: buildNote({ courses, memo }),
       활성: true,
     });
 

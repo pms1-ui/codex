@@ -49,9 +49,9 @@ function setMessage(text, type = "") {
 function renderCourses(courses) {
   courseList.innerHTML = courses
     .map(
-      (course, index) => `
+      (course) => `
         <label class="course-option">
-          <input type="radio" name="courseId" value="${course.id}" ${index === 0 ? "required" : ""} />
+          <input type="checkbox" name="courseIds" value="${course.id}" />
           <span class="course-copy">
             <strong>${course.title}</strong>
             <span>과정번호 ${course.id} · ${course.hours}H · ${course.days}일</span>
@@ -82,11 +82,15 @@ form.addEventListener("submit", async (event) => {
   const formData = new FormData(form);
   const payload = {
     name: formData.get("name"),
-    courseId: formData.get("courseId"),
+    courseIds: formData.getAll("courseIds"),
     memo: formData.get("memo"),
   };
 
   try {
+    if (!payload.courseIds.length) {
+      throw new Error("수강 희망 과정을 하나 이상 선택해주세요.");
+    }
+
     const response = await fetch("/api/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -100,8 +104,11 @@ form.addEventListener("submit", async (event) => {
 
     form.reset();
     setMessage("접수되었습니다. Baserow 테이블에 반영됐습니다.", "success");
-  } catch {
-    setMessage("제출 API가 실행 중이 아닙니다. 서버에서 npm start로 실행한 주소에서 제출해주세요.", "error");
+  } catch (error) {
+    setMessage(
+      error.message || "제출 API가 실행 중이 아닙니다. 서버에서 npm start로 실행한 주소에서 제출해주세요.",
+      "error",
+    );
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "제출하기";
